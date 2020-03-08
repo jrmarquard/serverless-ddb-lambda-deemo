@@ -1,0 +1,36 @@
+service: dynamoAndLambdaDemo
+
+plugins:
+  - serverless-plugin-typescript
+
+provider: 
+  name: aws
+  runtime: nodejs12.x
+  deploymentPrefix: demo-serverless
+  stage: ${opt:stage} # prefer making stage explicit
+  region: ap-southeast-2
+
+  environment:
+    stage: ${opt:stage}
+
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action: "dynamodb:*"  
+      Resource: "*"
+
+functions:
+  createUsers: 
+    handler: src/index.createUsers
+    description: Create 1 or more users
+    events:
+      - http:
+          path: users
+          method: post
+  listUsers: 
+    handler: src/index.listUsers
+    description: List users
+    events: 
+      - http: 
+          path: users/{id}
+          method: get
+    

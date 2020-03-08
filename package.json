@@ -1,0 +1,29 @@
+{
+  "name": "serverless-ddb-lambda-deemo",
+  "version": "1.0.0",
+  "description": "Demo of Serverless application using AWS DynamoDB and Lambda",
+  "main": "index.js",
+  "dependencies": {
+    "@types/aws-lambda": "^8.10.46",
+    "aws-sdk": "^2.635.0",
+    "serverless": "^1.65.0",
+    "serverless-plugin-typescript": "^1.1.9",
+    "typescript": "^3.8.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "deploy": "serverless deploy",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jrmarquard/serverless-ddb-lambda-demo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jrmarquard/serverless-ddb-lambda-demo/issues"
+  },
+  "homepage": "https://github.com/jrmarquard/serverless-ddb-lambda-demo#readme"
+}
