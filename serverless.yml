@@ -11,7 +11,8 @@ provider:
   region: ap-southeast-2
 
   environment:
-    stage: ${opt:stage}
+    STAGE: ${self:provider.stage}
+    USERS_TABLE: ${self:service}-${self:provider.stage}-users
 
   iamRoleStatements:
     - Effect: "Allow"
@@ -19,8 +20,8 @@ provider:
       Resource: "*"
 
 functions:
-  createUsers: 
-    handler: src/index.createUsers
+  createUser: 
+    handler: src/index.createUser
     description: Create 1 or more users
     events:
       - http:
@@ -33,4 +34,20 @@ functions:
       - http: 
           path: users/{id}
           method: get
+
+resources:
+  Resources:
+    usersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.USERS_TABLE}
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
     
