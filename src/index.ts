@@ -1,5 +1,5 @@
 import { APIGatewayEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { DynamoDB } from "aws-sdk";
+import { DynamoDB, KMS } from "aws-sdk";
 
 const uuid4 = require('uuid4');
 
@@ -19,6 +19,7 @@ export class ApiResponse {
 
 
 interface CreateUserBody {
+    cmk: string;
     firstName: string,
     lastName: string,
     username: string,
@@ -54,6 +55,9 @@ function validateCreateUserBody(obj: string | null): CreateUserBody {
     if (!body.username || typeof body.username !== "string") {
         errors.push(`Username is missing`);
     }
+    if (!body.cmk || typeof body.cmk !== "string") {
+        errors.push(`Custom Master Key is missing`);
+    }
 
     if (errors.length > 0) {
         throw new Error(errors.join(", "));
@@ -64,6 +68,17 @@ function validateCreateUserBody(obj: string | null): CreateUserBody {
 }
 
 export async function processCreateUserRequest(id: string, body: CreateUserBody) {
+    const customKey = body.cmk;
+    const kmsService = new KMS();
+    const passwordEncryped = await kmsService.encrypt({
+        KeyId: customKey,
+        Plaintext: body.password
+    }).promise()
+
+    if (!passwordEncryped.CiphertextBlob) {
+        throw new Error('Password could not be encrypted (CiphertextBlob missing)');
+    }
+
     const dynamodbClient = new DynamoDB({ apiVersion: '2012-08-10' });
     return await dynamodbClient.putItem({
         TableName: process.env.USERS_TABLE as string,
@@ -73,6 +88,7 @@ export async function processCreateUserRequest(id: string, body: CreateUserBody)
             "lastName": { 'S': body.lastName },
             "username": { 'S': body.username },
             "email": { 'S': body.email },
+            "password": { 'S': passwordEncryped.CiphertextBlob.toString() },
         }
     }).promise();
 }
@@ -87,8 +103,7 @@ export const createUser: apiFunc = async (event) => {
 
     try {
         const id = uuid4();
-        const response = await processCreateUserRequest(id, body);
-        console.log(JSON.stringify(response.Attributes));
+        await processCreateUserRequest(id, body);
 
         return new ApiResponse(200, "User Created", { id });
     } catch (error) {

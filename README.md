@@ -14,7 +14,7 @@ Demo of Serverless application using AWS DynamoDB and Lambda
     1. email: String
 1. Create Lambdas to create and list items from this DynamoDB table.
     1. Keep credentials attribute as a write-only attribute.
-1. Upon save take plain password and encrypt it using KMS with a user-defined CMK.
+    1. Upon save take plain password and encrypt it using KMS with a user-defined CMK.
 1. Make the Lambda function available via an AWS API Gateway endpoint.
 1. Write unit tests for your code by mocking AWS EC2 API.
 1. Produce a code coverage report for your test suite.
