@@ -38,7 +38,7 @@ export function validateCreateUserBody(obj: string | null): CreateUserData {
     }
 
     if (errors.length > 0) {
-        throw new Error(errors.join(", "));
+        throw new BadRequestError(errors.join(", "));
     }
 
     // TODO: other 4xx validation checks. e.g. email
