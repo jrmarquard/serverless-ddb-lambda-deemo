@@ -13,12 +13,13 @@ export const createUser: apiFunc = async (event) => {
         if (error.name === BadRequestError.NAME) {
             return new ApiResponse(400, error.message);
         }
-        /* TODO: direct these to Engineering team */
+        /* TODO: direct these to Engineering team and don't log */
+        console.log(error);
         return new ApiResponse(500, "Server Error");
     }
 }
 
-export const listUsers: apiFunc = async (event) => {
+export const getUser: apiFunc = async (event) => {
     try {
         const { id, userCmk, userCreds } = validateGetUserRequest(event);
 
@@ -33,7 +34,8 @@ export const listUsers: apiFunc = async (event) => {
         } else if (error.name === ForbiddenError.NAME) {
             return new ApiResponse(403, error.message);
         }
-        /* TODO: direct these to Engineering team */
+        /* TODO: direct these to Engineering team and don't log */
+        console.log(error);
         return new ApiResponse(500, "Server Error");
     }
 }
