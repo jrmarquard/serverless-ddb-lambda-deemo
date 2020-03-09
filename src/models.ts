@@ -37,6 +37,7 @@ export class ApiResponse {
     }
 }
 
+/* Custom errors */
 export class BadRequestError extends Error {
     public static NAME = "BadRequestError";
     name = BadRequestError.NAME;

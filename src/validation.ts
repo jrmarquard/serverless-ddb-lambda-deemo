@@ -4,45 +4,57 @@ import { HTTP_HEADER_USER_CMK, HTTP_HEADER_USER_CREDS } from './const';
 
 const uuid4 = require('uuid4');
 
+interface CreateUserFieldValidationMap { [field: string]: (value: any) => undefined | string }
+
+const isDefinedString = (field: string, v: any) => {
+    if (!v || typeof v !== "string") {
+        return `${field} is missing or not a string`;
+    } else {
+        return undefined;
+    }
+}
+const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+
+const createUserFieldValidationMap: CreateUserFieldValidationMap = {
+    email: (v: any) => {
+        if (!v || typeof v !== "string") {
+            return "Email is missing or not a string";
+        } else if (!v.match(new RegExp(emailRegex))) {
+            return "Email is not valid";
+        } else {
+            return undefined;
+        }
+    },
+    firstName: (v) => isDefinedString("firstName", v),
+    lastName: (v) => isDefinedString("lastName", v),
+    password: (v) => isDefinedString("password", v),
+    username: (v) => isDefinedString("username", v),
+    cmk: (v) => isDefinedString("cmk", v),
+}
+
 /* Return typed parameters for create user request, throw error if any invalid. */
 export function validateCreateUserBody(obj: string | null): CreateUserData {
     if (!obj) {
-        throw new Error("Missing body");
+        throw new BadRequestError("Missing body");
     }
 
-    let body: CreateUserData;
+    let body: { [x: string]: any };
     try {
-        body = JSON.parse(obj) as CreateUserData;
+        body = JSON.parse(obj);
     } catch {
-        throw new Error("JSON is not valid");
+        throw new BadRequestError("JSON is not valid");
     }
 
-    const errors: Array<string> = [];
-    if (!body.email || typeof body.email !== "string") {
-        errors.push(`Email is missing or not a string`);
-    }
-    if (!body.firstName || typeof body.firstName !== "string") {
-        errors.push(`First name is missing`);
-    }
-    if (!body.lastName || typeof body.lastName !== "string") {
-        errors.push(`Last name is missing`);
-    }
-    if (!body.password || typeof body.password !== "string") {
-        errors.push(`Password is missing`);
-    }
-    if (!body.username || typeof body.username !== "string") {
-        errors.push(`Username is missing`);
-    }
-    if (!body.cmk || typeof body.cmk !== "string") {
-        errors.push(`Custom Master Key is missing`);
-    }
+    // const errors: Array<string> = [];
+    const errors = Object.entries(createUserFieldValidationMap)
+        .map(([field, fn]) => fn(body[field]))
+        .filter(validationError => (validationError !== undefined)) as Array<string>
 
     if (errors.length > 0) {
         throw new BadRequestError(errors.join(", "));
     }
 
-    // TODO: other 4xx validation checks. e.g. email
-    return body;
+    return body as CreateUserData;
 }
 
 

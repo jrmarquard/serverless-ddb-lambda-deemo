@@ -13,6 +13,7 @@ export const createUser: apiFunc = async (event) => {
         if (error.name === BadRequestError.NAME) {
             return new ApiResponse(400, error.message);
         }
+        /* TODO: direct these to Engineering team */
         return new ApiResponse(500, "Server Error");
     }
 }
@@ -32,6 +33,7 @@ export const listUsers: apiFunc = async (event) => {
         } else if (error.name === ForbiddenError.NAME) {
             return new ApiResponse(403, error.message);
         }
+        /* TODO: direct these to Engineering team */
         return new ApiResponse(500, "Server Error");
     }
 }
