@@ -1,6 +1,5 @@
 import { DynamoDB, KMS } from "aws-sdk";
 import { CreateUserBody, ApiResponse, UUID, ForbiddenError, BadRequestError } from "./models";
-import { HTTP_403_MESSAGE } from "./const";
 
 const uuid4 = require('uuid4');
 

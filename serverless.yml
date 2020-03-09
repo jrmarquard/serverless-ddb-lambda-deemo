@@ -27,8 +27,8 @@ functions:
       - http:
           path: users
           method: post
-  listUsers: 
-    handler: src/index.listUsers
+  getUser: 
+    handler: src/index.getUser
     description: List users
     events: 
       - http: 
