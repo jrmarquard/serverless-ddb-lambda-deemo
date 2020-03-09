@@ -33,3 +33,10 @@ Demo of Serverless application using AWS DynamoDB and Lambda
 ## Deployment 
 
 Run `npm run deploy -- --stage { dev | prod }` to deploy to either dev or prod. `--stage` is required.
+
+## Notes
+
+#### Assumptions and liberties taken with instructions
+
+- "credentials" is a simple plain text password
+- "user-defined CMK" is a fully qualified ARN that the lambda handling the KMS encrypt has permission to use
